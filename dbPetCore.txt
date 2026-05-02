@@ -1,0 +1,100 @@
+TUTOR:
+- id
+- nome 
+- data nascimento
+- telefone
+- email
+- gênero
+----------
+tut_pet:
+- id_tutor
+- id_pet
+----------
+PET:
+- id
+- nome
+- espécie
+- raca
+- data nascimento
+- pelagem
+- porte
+- sexo
+- status: óbito
+-
+----------
+HISTORICO:
+- id
+- id_med responsável
+-------- id_prontuario------------
+----------
+RELATORIO:
+- id
+- id_historico
+- id_medico
+----------
+CLI_REL:
+- id_cli
+- id_rel
+----------
+CLINICA:
+- cnpj
+- nome
+- cep
+- complemento
+----------
+MEDICO:
+- id
+- nome 
+- data nascimento
+- telefone
+- email
+- gênero
+- especialização
+----------
+med_prot:
+- id_med
+- id_prot
+----------
+PROTOCOLO:
+- id
+- evento
+- descrição
+----------
+RECEITA
+- id
+- nome
+- validade 
+- id_med
+- id_pet
+- id_tut
+- medicamentos (varchar)
+- id prontuario
+copia do outro
+----------
+EXAME:
+- id
+- nome
+- data
+- id_med
+- id_pet
+- id_tut
+- id prontuario
+- tipo exame (varchar)
+----------
+PRONTUARIO:
+- id
+- data
+- descricao
+- id_pet 
+- id_tutor 
+- id_hist
+----------
+med_pron:
+- id_med
+- id_prontuario
+-----------------------------
+HERANçAS
+- usuario -> medico e tutor
+- emissao -> receita e exame
+
+
