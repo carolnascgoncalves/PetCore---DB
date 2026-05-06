@@ -7,7 +7,7 @@ DATA_NASC_tut   DATE           NOT NULL,
 TEL_tut         CHAR(11)       NOT NULL,    -- TELEFONE
 EMAIL_tut       VARCHAR2(40)   NOT NULL,
 GENERO_tut      CHAR(1)        NOT NULL,
-SENHA_TUTOR     VARCHAR2(30)   NOT NULL
+SENHA_tut       VARCHAR2(30)   NOT NULL
 );
 -------------------2----------------------
 DROP TABLE pet cascade constraints;
