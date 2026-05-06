@@ -2,56 +2,59 @@
 DROP TABLE tutor_petcore cascade constraints;
 CREATE TABLE tutor_petcore(
 ID_tut          NUMBER         PRIMARY KEY,     
-NOME_tut        VARCHAR2(50)   NOT NULL,
+NOME_tut        VARCHAR2(100)  NOT NULL,
 DATA_NASC_tut   DATE           NOT NULL,
 TEL_tut         CHAR(11)       NOT NULL,    -- TELEFONE
-EMAIL_tut       VARCHAR2(40)   NOT NULL,
-GENERO_tut      CHAR(1)        NOT NULL,
+EMAIL_tut       VARCHAR2(100)  NOT NULL,
+SEXO_tut        CHAR(1)        NOT NULL,
 SENHA_tut       VARCHAR2(30)   NOT NULL
 );
 -------------------2----------------------
 DROP TABLE pet_petcore cascade constraints;
 CREATE TABLE pet_petcore(
 ID_pet          NUMBER         PRIMARY KEY,
-NOME_pet        VARCHAR2(50)   NOT NULL,
-ESPECIE_pet     VARCHAR2(50)   NOT NULL,
-RACA_pet        VARCHAR2(50)   NOT NULL,
+NOME_pet        VARCHAR2(100)  NOT NULL,
+ESPECIE_pet     VARCHAR2(100)  NOT NULL,
+RACA_pet        VARCHAR2(150)  NOT NULL,
 DATA_NASC_pet   DATE           NOT NULL,
-PELAGEM_pet     VARCHAR2(50)   NOT NULL,
-PORTE_pet       VARCHAR2(20)   NOT NULL,
+PELAGEM_pet     VARCHAR2(150)  NOT NULL,
+PORTE_pet       VARCHAR2(25)   NOT NULL,
 SEXO_pet        CHAR(1)        NOT NULL,
-STATUS_pet      VARCHAR2(10)    
+STATUS_pet      VARCHAR2(10),
+ID_hist_fk      REFERENCES     historico_petcore
 );
 -------------------3----------------------
 DROP TABLE tut_pet_petcore cascade constraints;
 CREATE TABLE tut_pet_petcore(
-ID_pet_fk       REFERENCES    pet,
-ID_tut_fk       REFERENCES    tutor
+ID_pet_fk       REFERENCES    pet_petcore,
+ID_tut_fk       REFERENCES    tutor_petcore
 );
 -------------------4----------------------
 DROP TABLE medico_petcore cascade constraints;
 CREATE TABLE medico_petcore(
 ID_med          NUMBER         PRIMARY KEY,
-NOME_med        VARCHAR2(50)   NOT NULL,
+NOME_med        VARCHAR2(100)  NOT NULL,
 DATA_NASC_med   DATE           NOT NULL,
 TEL_med         CHAR(11)       NOT NULL,
-EMAIL_med       VARCHAR2(40)   NOT NULL,
-GENERO_med      CHAR(1)        NOT NULL,
-ESPEC_med       VARCHAR2(100)  NOT NULL     -- ESPECIALIDADE
+EMAIL_med       VARCHAR2(100)  NOT NULL,
+SEXO_med        CHAR(1)        NOT NULL,
+SENHA_med       VARCHAR2(30)   NOT NULL,
+ESPEC_med       VARCHAR2(200)  NOT NULL     -- ESPECIALIDADE
 );
 -------------------5----------------------
 DROP TABLE historico_petcore cascade constraint;
 CREATE TABLE historico_petcore(
 ID_hist         NUMBER         PRIMARY KEY,
 DATA_hist       DATE           NOT NULL,
-STATUS_hist     VARCHAR(10)                 -- ATIVO ou INATIVO
+STATUS_hist     VARCHAR(15)                 -- ATIVO ou INATIVO
 );
 -------------------6----------------------
 DROP TABLE relatorio_petcore cascade constraints;
 CREATE TABLE relatorio_petcore(
 ID_rel          NUMBER         PRIMARY KEY,
-ID_HIS_rel      REFERENCES     historico       NOT NULL,   -- HISTORICO DA QUAL ELE FOI FEITO
-ID_MED_rel      REFERENCES     medico          NOT NULL    -- MEDICO RESPONSÁVEL 
+OBS_rel         VARCHAR(500),
+ID_HIS_rel      REFERENCES     historico_petcore       NOT NULL,   -- HISTORICO DA QUAL ELE FOI FEITO
+ID_MED_rel      REFERENCES     medico_petcore          NOT NULL   -- MEDICO RESPONSÁVEL 
 );
 -------------------7----------------------
 DROP TABLE endereco_petcore cascade constraints;
@@ -66,58 +69,58 @@ DROP TABLE clinica_petcore cascade constraints;
 CREATE TABLE clinica_petcore(
 ID_cli          NUMBER         PRIMARY KEY,
 CNPJ_cli        CHAR(14)       NOT NULL,
-NOME_cli        VARCHAR2(50)   NOT NULL,
-ID_ENDER_fk     REFERENCES     endereco        NOT NULL   -- ENDEREÇO DA CLINICA
+NOME_cli        VARCHAR2(100)  NOT NULL,
+ID_ENDER_fk     REFERENCES     endereco_petcore        NOT NULL   -- ENDEREÇO DA CLINICA
 );
 -------------------9----------------------
 DROP TABLE cli_rel_petcore cascade constraints;
 CREATE TABLE cli_rel_petcore(
-ID_cli          REFERENCES      clinica,
-ID_rel          REFERENCES      relatorio
+ID_cli          REFERENCES      clinica_petcore,
+ID_rel          REFERENCES      relatorio_petcore
 );
 -------------------10---------------------
 DROP TABLE exame_petcore cascade constraints;
 CREATE TABLE exame_petcore(
 ID_ex           NUMBER         PRIMARY KEY,
-NOME_ex         VARCHAR2(50)   NOT NULL,
+NOME_ex         VARCHAR2(100)  NOT NULL,
 DATA_ex         DATE           NOT NULL,
 TP_ex           VARCHAR(100)   NOT NULL,                  -- TIPO DO EXAME
-ID_MED_fk       REFERENCES     medico         NOT NULL,   -- MEDICO RESPONSAVEL
-ID_PET_fk       REFERENCES     pet            NOT NULL    -- PET VINCULADO
+ID_MED_fk       REFERENCES     medico_petcore         NOT NULL,   -- MEDICO RESPONSAVEL
+ID_PET_fk       REFERENCES     pet_petcore            NOT NULL    -- PET VINCULADO
 );
 -------------------11---------------------
 DROP TABLE receita_petcore cascade constraints;
 CREATE TABLE receita_petcore(
 ID_rec         NUMBER          PRIMARY KEY,
-NOME_rec       VARCHAR2(50)    NOT NULL,
+NOME_rec       VARCHAR2(100)   NOT NULL,
 VAL_rec        DATE            NOT NULL,    -- VALIDADE
-ID_MED_fk      REFERENCES      medico         NOT NULL,   -- MEDICO RESPONSAVEL
-ID_PET_fk      REFERENCES      pet            NOT NULL    -- PET VINCULADO
+ID_MED_fk      REFERENCES      medico_petcore        NOT NULL,   -- MEDICO RESPONSAVEL
+ID_PET_fk      REFERENCES      pet_petcore            NOT NULL    -- PET VINCULADO
 );
 -------------------12---------------------
 DROP TABLE medicamento_petcore cascade constraints;
 CREATE TABLE medicamento_petcore(
 ID_medic       NUMBER          PRIMARY KEY,
-NOME_medic     VARCHAR2(50)    NOT NULL,
-DOSAGEM_medic  VARCHAR2(10)    NOT NULL,
-INSTRC_medic   VARCHAR2(100)   NOT NULL     -- INSTRUÇÕES
+NOME_medic     VARCHAR2(100)   NOT NULL,
+DOSAGEM_medic  VARCHAR2(15)    NOT NULL,
+INSTRC_medic   VARCHAR2(200)   NOT NULL     -- INSTRUÇÕES
 );
 -------------------13---------------------
 DROP TABLE rec_medic_petcore cascade constraints;
 CREATE TABLE rec_medic_petcore(
-ID_rec_fk      REFERENCES      receita         NOT NULL,
-ID_medic_fk    REFERENCES      medicamento     NOT NULL
+ID_rec_fk      REFERENCES      receita_petcore         NOT NULL,
+ID_medic_fk    REFERENCES      medicamento_petcore     NOT NULL
 );
 -------------------14---------------------
 DROP TABLE prontuario_petcore cascade constraints;
 CREATE TABLE prontuario_petcore(
 ID_pront       NUMBER          PRIMARY KEY,
 DATA_pront     DATE            NOT NULL,
-DESC_pront     VARCHAR(200),    
-ID_PET_fk      REFERENCES      pet             NOT NULL,    -- PET VINCULADO
-ID_tut_fk      REFERENCES      tutor           NOT NULL,    -- TUTOR RESPONSAVEL
-ID_HIST_fk     REFERENCES      historico       NOT NULL,    -- HISTORICO A QUAL ELE VAI SER ENVIADO
-ID_MED_fk      REFERENCES      medico          NOT NULL     -- MEDICO RESPONSÁVEL 
+DESC_pront     VARCHAR(500),    
+ID_PET_fk      REFERENCES      pet_petcore             NOT NULL,    -- PET VINCULADO
+ID_tut_fk      REFERENCES      tutor_petcore           NOT NULL,    -- TUTOR RESPONSAVEL
+ID_HIST_fk     REFERENCES      historico_petcore       NOT NULL,    -- HISTORICO A QUAL ELE VAI SER ENVIADO
+ID_MED_fk      REFERENCES      medico_petcore          NOT NULL     -- MEDICO RESPONSÁVEL 
 );
 -- =========================================================
 
