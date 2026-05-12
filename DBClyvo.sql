@@ -400,7 +400,7 @@ exec inserir_dados_medico(1, 'Renato Gonçalves', to_date('04-09-1990','DD-MM-YY
 exec inserir_dados_medico(2, 'Julio Juniro', to_date('08-02-1986','DD-MM-YYYY'), '11883746219', 'JU9836247@gmail.com', 'M', '439857$%', 'Cardiologia');
 exec inserir_dados_medico(3, 'Rafael Gomes', to_date('02-05-1978','DD-MM-YYYY'), '11983647515', 'RAFAFAF9483794@gmail.com', 'M', '34957DF%', 'Nutrição');
 exec inserir_dados_medico(4, 'Amanhda Rocha', to_date('10-07-1986','DD-MM-YYYY'), '11983029361', 'amanhda435789@gmail.com', 'F', '8435987DFG', 'Patologia');
-exec inserir_dados_medico(5, 'Livia Almeida', to_date('17-01-2000','DD-MM-YYYY'), '11982018451', 'Pink23443@gmail.com', 'F', '54633$&dfg', 'Dermatologia');
+exec inserir_dados_medico(5, 'Livia Almeida', to_date('17-01-2000','DD-MM-YYYY'), '11982018451', 'Pink23443@gmail.com', 'F', '54633$dffg', 'Dermatologia');
 
 
 
@@ -541,13 +541,13 @@ end;
 exec inserir_dados_tut_pet(1, 1);
 exec inserir_dados_tut_pet(2, 2);
 exec inserir_dados_tut_pet(3, 2);
-exec inserir_dados_tut_pet(4, 4);
-exec inserir_dados_tut_pet(5, 5);
-exec inserir_dados_tut_pet(6, 6);
-exec inserir_dados_tut_pet(7, 9);
-exec inserir_dados_tut_pet(8, 9);
-exec inserir_dados_tut_pet(9, 9);
-exec inserir_dados_tut_pet(10, 1);
+exec inserir_dados_tut_pet(4, 2);
+exec inserir_dados_tut_pet(5, 3);
+exec inserir_dados_tut_pet(6, 4);
+exec inserir_dados_tut_pet(7, 4);
+exec inserir_dados_tut_pet(8, 5);
+exec inserir_dados_tut_pet(9, 5);
+exec inserir_dados_tut_pet(10, 5);
 
 
 
@@ -1085,3 +1085,52 @@ exec inserir_dados_prontuario(5, 5, 5, to_date('09-03-2026','DD-MM-YYYY'), 'Paci
 exec inserir_dados_prontuario(6, 6, 1, to_date('02-05-2026','DD-MM-YYYY'), 'Paciente apresentou sintomas da doença do carrapato. Tratamento iniciado.');
 exec inserir_dados_prontuario(7, 7, 3, to_date('22-04-2026','DD-MM-YYYY'), 'Paciente apresentou melhora no tratamento da diarreia.');
 -- ==================================================================
+/*
+SELECT 
+    tut.id_tut "Id tutor",
+    tut.nome_tut "Nome tutor",
+    pet.id_pet "Id pet",
+    pet.nome_pet "Nome pet"
+FROM tutor_petcore tut
+INNER JOIN tut_pet_petcore tut_pet 
+    ON tut_pet.id_tut_fk = tut.id_tut
+INNER JOIN pet_petcore pet 
+    ON pet.id_pet = tut_pet.id_pet_fk
+order by tut.id_tut;
+
+-----------------------------
+SELECT 
+    especie_pet,
+    COUNT(*) "Quantidade"
+FROM pet_petcore
+GROUP BY especie_pet;
+-----------------------------
+SELECT
+    hist.id_hist "Id historico",
+    hist.data_hist "Data historico",
+    hist.status_hist "Status historico",
+    pront.id_pront "Id prontuário",
+    med.nome_med "Nome medico responsável"
+from historico_petcore hist
+inner join prontuario_petcore pront on pront.id_hist_fk = hist.id_hist
+inner join medico_petcore med on med.id_med = pront.id_med_fk;
+
+-- id do tutor, nome do tutor -> tut_pet -> id do pet, nome do pet
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
