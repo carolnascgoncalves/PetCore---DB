@@ -242,7 +242,7 @@ end;
 
 
 exec inserir_dados_tutor(1, 'Sandra Nascimento', to_date('14-11-1968','DD-MM-YYYY'), '11992746375', 'sandraReg@gmail.com', 'F', '523453466256');
-exec inserir_dados_tutor(2, 'Noelle Almeida', to_date('18-05-1988','DD-MM-YYYY'), '11992746375', 'Nolal@gmail.com', 'F', '2445356ghd5');
+exec inserir_dados_tutor(2, 'Noelle Almeida', to_date('18-05-1988','DD-MM-YYYY'), '11992933212', 'Nolal@gmail.com', 'F', '2445356ghd5');
 exec inserir_dados_tutor(3, 'Lucia Lurdes', to_date('23-04-1993','DD-MM-YYYY'), '11993857635', 'lulu.lurdes@gmail.com', 'F', '233453564fghj');
 exec inserir_dados_tutor(4, 'Mario Barros', to_date('27-08-2008','DD-MM-YYYY'), '11993627104', 'mariooo324@gmail.com', 'M', 'maa933452847');
 exec inserir_dados_tutor(5, 'Luis Alfredo', to_date('14-11-1990','DD-MM-YYYY'), '11903725364', 'lui98437@gmail.com', 'M', '92384792745');
