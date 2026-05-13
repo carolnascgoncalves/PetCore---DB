@@ -308,17 +308,16 @@ end;
 /
 
 
-exec inserir_dados_historico(1,  to_date('03-05-2026','DD-MM-YYYY'), 'INATIVO'); 
-exec inserir_dados_historico(2,  to_date('25-07-2025','DD-MM-YYYY'), 'INATIVO');
-exec inserir_dados_historico(3,  to_date('09-02-2026','DD-MM-YYYY'), 'ATIVO');
-exec inserir_dados_historico(4,  to_date('19-05-2026','DD-MM-YYYY'), 'ATIVO');
-exec inserir_dados_historico(5,  to_date('01-03-2026','DD-MM-YYYY'), 'ATIVO');
-exec inserir_dados_historico(6,  to_date('15-07-2025','DD-MM-YYYY'), 'INATIVO');
-exec inserir_dados_historico(7,  to_date('20-08-2025','DD-MM-YYYY'), 'INATIVO');
-exec inserir_dados_historico(8,  to_date('16-10-2025','DD-MM-YYYY'), 'INATIVO');
-exec inserir_dados_historico(9,  to_date('03-01-2026','DD-MM-YYYY'), 'ATIVO');
-exec inserir_dados_historico(10,  to_date('03-02-2026','DD-MM-YYYY'),'ATIVO');
-
+exec inserir_dados_historico(1, to_date('03-05-2026','DD-MM-YYYY'), 'INATIVO');
+exec inserir_dados_historico(2, to_date('25-07-2025','DD-MM-YYYY'), 'ATIVO');
+exec inserir_dados_historico(3, to_date('09-02-2026','DD-MM-YYYY'), 'ATIVO');
+exec inserir_dados_historico(4, to_date('19-05-2026','DD-MM-YYYY'), 'ATIVO');
+exec inserir_dados_historico(5, to_date('01-03-2026','DD-MM-YYYY'), 'ATIVO');
+exec inserir_dados_historico(6, to_date('15-07-2025','DD-MM-YYYY'), 'INATIVO');
+exec inserir_dados_historico(7, to_date('20-08-2025','DD-MM-YYYY'), 'ATIVO');
+exec inserir_dados_historico(8, to_date('16-10-2025','DD-MM-YYYY'), 'INATIVO');
+exec inserir_dados_historico(9, to_date('03-01-2026','DD-MM-YYYY'), 'ATIVO');
+exec inserir_dados_historico(10, to_date('03-02-2026','DD-MM-YYYY'),'ATIVO');
 
 
 -------------------  MEDICO  -------------------
@@ -420,20 +419,29 @@ STATUS_pet      IN VARCHAR2
 is
     V_MSG_log       VARCHAR2(300);
     V_COD_log       VARCHAR2(50);
+    V_STATUS_hist   VARCHAR2(15);
+    
     status_exc      EXCEPTION;
     sexo_excedente  EXCEPTION;
-    dupl_erro      EXCEPTION;  
-    erro_fk           EXCEPTION;
+    dupl_erro       EXCEPTION;  
+    erro_fk         EXCEPTION;
+    pet_hist_exc    EXCEPTION;
 
     PRAGMA EXCEPTION_INIT(erro_fk, -2291);
     PRAGMA EXCEPTION_INIT(dupl_erro, -1);
     
 begin
-    if(not(UPPER(STATUS_pet) = 'ATIVO') and not(UPPER(STATUS_pet) = 'INATIVO')) then
+    if(not(UPPER(STATUS_pet) = 'ATIVO')and not(UPPER(STATUS_pet) = 'INATIVO')) then
         RAISE status_exc;
         
     elsif(length(SEXO_pet) != 1) then
         RAISE sexo_excedente; 
+    end if;
+    
+    
+    select status_hist into V_STATUS_hist from historico_petcore where id_hist = ID_hist_FK;
+    if (upper(V_STATUS_HIST) = 'INATIVO' and upper(STATUS_pet) = 'ATIVO') then
+        raise pet_hist_exc;
     end if;
     
     insert into pet_petcore(ID_pet, ID_hist_FK, NOME_pet, ESPECIE_pet, RACA_pet, DATA_NASC_pet, PELAGEM_pet, PORTE_pet, SEXO_pet, STATUS_pet)
@@ -443,21 +451,28 @@ begin
 EXCEPTION
     when erro_fk then
         V_MSG_log := 'ERRO ao adicionar dado na tabela PET. Id do PET ou do TUTOR não foram encontrados';
-        V_COD_log := TO_CHAR(SQLCODE);
+        V_COD_log := 'PET003';
         dbms_output.put_line(V_MSG_log);
         
         insert into log_petcore(NOME_log, DATA_log, COD_log, MSG_log, NOME_PROC_log) values(USER, SYSDATE, V_COD_log, V_MSG_log, 'inserir_dados_pet');
 
     when dupl_erro then
         V_MSG_log := 'ERRO ao adicionar dado na tabela PET. Essa entidade já existe';
-        V_COD_log := TO_CHAR(SQLCODE);
+        V_COD_log := 'PET005';
+        dbms_output.put_line(V_MSG_log);
+        
+        insert into log_petcore(NOME_log, DATA_log, COD_log, MSG_log, NOME_PROC_log) values(USER, SYSDATE, V_COD_log, V_MSG_log, 'inserir_dados_pet');
+
+    when pet_hist_exc then
+        V_MSG_log := 'ERRO ao adicionar PET ativo com histórico inativo';
+        V_COD_log := 'PET004';
         dbms_output.put_line(V_MSG_log);
         
         insert into log_petcore(NOME_log, DATA_log, COD_log, MSG_log, NOME_PROC_log) values(USER, SYSDATE, V_COD_log, V_MSG_log, 'inserir_dados_pet');
 
     when status_exc then
         V_MSG_log := 'ERRO ao adicionar dado na tabela PET. "Status" Deve ser "ativo" ou "inativo"';
-        V_COD_log := TO_CHAR(SQLCODE);
+        V_COD_log := 'PET001';
         
         dbms_output.put_line(V_MSG_log);
         
@@ -465,14 +480,14 @@ EXCEPTION
 
     WHEN sexo_excedente then
         V_MSG_log := 'ERRO ao adicionar dado na tabela PET. "Sexo" deve conter entre 1 caractere';
-        V_COD_log := TO_CHAR(SQLCODE);
+        V_COD_log := 'PET002';
         dbms_output.put_line(V_MSG_log);
         
         insert into log_petcore(NOME_log, DATA_log, COD_log, MSG_log, NOME_PROC_log) values(USER, SYSDATE, V_COD_log, V_MSG_log, 'inserir_dados_pet');
     
     WHEN others then
-        V_MSG_log := 'ERRO ao adicionar dado na tabela PET. "Id do historico" não foi encontrado na tabela HISTORICO';  
-        V_COD_log := TO_CHAR(SQLCODE);
+        V_MSG_log := 'ERRO ao adicionar dado na tabela PET. Verifique os dados';  
+        V_COD_log := 'PET999';
         dbms_output.put_line(V_MSG_log);
         
         insert into log_petcore(NOME_log, DATA_log, COD_log, MSG_log, NOME_PROC_log) values(USER, SYSDATE, V_COD_log, V_MSG_log, 'inserir_dados_pet');
@@ -481,17 +496,16 @@ end;
 /
 
 
-exec inserir_dados_pet(1, 1, 'Olimpio', 'Cachorro', 'Yorkshire', to_date('12-11-2006','DD-MM-YYYY'), 'Média amarronzada', 'Pequeno', 'M','ATIVO');
-exec inserir_dados_pet(2, 2, 'Dori', 'Peixe', 'Beta', to_date('10-06-2020','DD-MM-YYYY'), 'Vermelha', 'Pequeno', 'F','ATIVO'); 
-exec inserir_dados_pet(3, 3, 'Thor', 'Cachorro', 'Golden retriever', to_date('02-07-2010','DD-MM-YYYY'), 'Amarronzada', 'Medio', 'M','ATIVO'); 
-exec inserir_dados_pet(4, 4, 'lidia', 'Gato', 'Malhado', to_date('06-02-2017','DD-MM-YYYY'), 'Malhado', 'Pequeno', 'F','ATIVO'); 
-exec inserir_dados_pet(5, 5, 'Maria', 'Cachorro', 'Pug', to_date('19-09-2023','DD-MM-YYYY'), 'Pelagem Preta', 'Pequeno', 'F','ATIVO'); 
-exec inserir_dados_pet(6, 6, 'Rico', 'Passaro', 'Papaguaio', to_date('10-10-2007','DD-MM-YYYY'), 'Colorido', 'Pequeno', 'F','ATIVO'); 
-exec inserir_dados_pet(7, 7, 'Caramelo', 'Cachorro', 'Vira-lata', to_date('11-12-2021','DD-MM-YYYY'), 'Marrom claro', 'Grande', 'M','ATIVO'); 
-exec inserir_dados_pet(8, 8, 'Bebel', 'Cachorro', 'Beagle', to_date('16-03-2019','DD-MM-YYYY'), 'Castanho e Branco', 'Pequeno', 'F','ATIVO'); 
-exec inserir_dados_pet(9, 9, 'Moli', 'Cachorro', 'Yorkshire', to_date('03-08-2017','DD-MM-YYYY'), 'Média amarronzada', 'Grande', 'F','ATIVO'); 
-exec inserir_dados_pet(10, 10, 'Jully', 'Cachorro', 'Rottweiler', to_date('07-01-2019','DD-MM-YYYY'), 'Preto', 'Media', 'F','ATIVO');
-
+exec inserir_dados_pet(1, 1, 'Olimpio', 'Cachorro', 'Yorkshire', to_date('12-11-2006','DD-MM-YYYY'), 'Média amarronzada', 'Pequeno', 'M','INATIVO');
+exec inserir_dados_pet(2, 2, 'Dori', 'Peixe', 'Beta', to_date('10-06-2020','DD-MM-YYYY'), 'Vermelha', 'Pequeno', 'F','ATIVO');
+exec inserir_dados_pet(3, 3, 'Thor', 'Cachorro', 'Golden retriever', to_date('02-07-2010','DD-MM-YYYY'), 'Amarronzada', 'Medio', 'M','ATIVO');
+exec inserir_dados_pet(4, 4, 'Lidia', 'Gato', 'Malhado',to_date('06-02-2017','DD-MM-YYYY'),'Malhado', 'Pequeno', 'F','ATIVO');
+exec inserir_dados_pet(5, 5, 'Maria', 'Cachorro', 'Pug',to_date('19-09-2023','DD-MM-YYYY'),'Pelagem Preta', 'Pequeno', 'F','ATIVO');
+exec inserir_dados_pet(6, 6, 'Rico', 'Passaro', 'Papagaio',to_date('10-10-2007','DD-MM-YYYY'),'Colorido', 'Pequeno', 'F','INATIVO');
+exec inserir_dados_pet(7, 7, 'Caramelo', 'Cachorro', 'Vira-lata',to_date('11-12-2021','DD-MM-YYYY'),'Marrom claro', 'Grande', 'M','ATIVO');
+exec inserir_dados_pet(8, 8, 'Bebel', 'Cachorro', 'Beagle',to_date('16-03-2019','DD-MM-YYYY'),'Castanho e Branco', 'Pequeno', 'F','INATIVO');
+exec inserir_dados_pet(9, 9, 'Moli', 'Cachorro', 'Yorkshire',to_date('03-08-2017','DD-MM-YYYY'),'Média amarronzada', 'Grande', 'F','ATIVO');
+exec inserir_dados_pet(10, 10, 'Jully', 'Cachorro', 'Rottweiler',to_date('07-01-2019','DD-MM-YYYY'),'Preto', 'Media', 'F','ATIVO');
 
 -------------------  TUTOR_PET -> associativa  -------------------
 create or replace procedure inserir_dados_tut_pet(
@@ -680,12 +694,12 @@ EXCEPTION
 end;
 /
 
-exec inserir_dados_endereco(1, '01001000');
-exec inserir_dados_endereco(2, '05999999');
-exec inserir_dados_endereco(3, '08000000');
-exec inserir_dados_endereco(4, '08499999');
-exec inserir_dados_endereco(5, '02000000');
-exec inserir_dados_endereco(6, '05999999');
+exec inserir_dados_endereco(1,'01001000','Apto 14 bloco B');
+exec inserir_dados_endereco(2,'05999999','Casa 2 fundos');
+exec inserir_dados_endereco(3,'08000000','Próximo ao mercado central');
+exec inserir_dados_endereco(4,'08499999');
+exec inserir_dados_endereco(5,'02000000','Sala 5');
+exec inserir_dados_endereco(6,'05999999');
 
 
 
@@ -912,7 +926,7 @@ end;
 exec inserir_dados_receita(1, 1, 'Receita para controle hormonal', to_date('04-02-2026','DD-MM-YYYY'));
 exec inserir_dados_receita(2, 2, 'Receita para vermes', to_date('08-01-2026','DD-MM-YYYY'));
 exec inserir_dados_receita(3, 3, 'Receita para gripe', to_date('02-01-2026','DD-MM-YYYY'));
-exec inserir_dados_receita(4, 4, 'Receita para ', to_date('14-04-2026','DD-MM-YYYY'));
+exec inserir_dados_receita(4,4,'Receita para tratamento de diabetes',to_date('14-04-2026','DD-MM-YYYY'));
 exec inserir_dados_receita(5, 5, 'Receita para controle hormonal', to_date('24-03-2026','DD-MM-YYYY'));
 exec inserir_dados_receita(6, 1, 'Receita para controle hormonal', to_date('25-01-2026','DD-MM-YYYY'));
 exec inserir_dados_receita(7, 2, 'Receita para controle hormonal', to_date('17-04-2026','DD-MM-YYYY'));
@@ -1043,13 +1057,21 @@ DESC_pront     IN VARCHAR2
 is
     V_MSG_log       VARCHAR2(300);
     V_COD_log       VARCHAR2(50);
+    V_STATUS        VARCHAR2(15);
+    
     erro_fk         EXCEPTION;
     dupl_erro       EXCEPTION;
+    hist_inativo    EXCEPTION;
     
     PRAGMA EXCEPTION_INIT(dupl_erro, -1);
     PRAGMA EXCEPTION_INIT(erro_fk, -2291);
      
 begin
+    select status_hist INTO V_STATUS from historico_petcore where id_hist = ID_HIST_FK;
+    if upper(V_STATUS) = 'INATIVO' then
+        raise hist_inativo;
+    end if;
+
     insert into prontuario_petcore(ID_pront, ID_HIST_FK, ID_MED_FK, DATA_pront, DESC_pront) values(ID_pront, ID_HIST_FK, ID_MED_FK, DATA_pront, DESC_pront);
     dbms_output.put_line('Dado inserido na tabela PRONTUARIO com sucesso!');
 
@@ -1068,6 +1090,13 @@ EXCEPTION
         
         insert into log_petcore(NOME_log, DATA_log, COD_log, MSG_log, NOME_PROC_log) values(USER, SYSDATE, V_COD_log, V_MSG_log, 'inserir_dados_prontuario');
 
+    when hist_inativo  then
+        V_MSG_log := 'ERRO ao adicionar dado na tabela PRONTUARIO. Não é possível inserir prontuário em histórico inativo';
+        V_COD_log := 'PRO002';
+        dbms_output.put_line(V_MSG_log);
+        
+        insert into log_petcore(NOME_log, DATA_log, COD_log, MSG_log, NOME_PROC_log) values(USER, SYSDATE, V_COD_log, V_MSG_log, 'inserir_dados_prontuario');
+
     when others then
         V_MSG_log := 'ERRO ao adicionar dado na tabela PRONTUARIO. Confira os dados novamente';
         V_COD_log := TO_CHAR(SQLCODE);
@@ -1077,13 +1106,11 @@ EXCEPTION
 end;
 /
 
-exec inserir_dados_prontuario(1, 1, 1, to_date('08-05-2026','DD-MM-YYYY'), 'Paciente apresentou alteração hormonal. Tratamento iniciado.');
-exec inserir_dados_prontuario(2, 2, 2, to_date('07-01-2026','DD-MM-YYYY'), 'Paciente apresentou melhora do tratamento de hipotermia.');
-exec inserir_dados_prontuario(3, 3, 3, to_date('03-05-2026','DD-MM-YYYY'), 'Paciente apresentou febre alta e fadiga. Tratamento iniciado.');
-exec inserir_dados_prontuario(4, 4, 4, to_date('13-02-2026','DD-MM-YYYY'), 'Paciente apresentou sintamosa de diabetes. Tratamento iniciado.');
-exec inserir_dados_prontuario(5, 5, 5, to_date('09-03-2026','DD-MM-YYYY'), 'Paciente apresentou alteração hormonal. Tratamento iniciado.');
-exec inserir_dados_prontuario(6, 6, 1, to_date('02-05-2026','DD-MM-YYYY'), 'Paciente apresentou sintomas da doença do carrapato. Tratamento iniciado.');
-exec inserir_dados_prontuario(7, 7, 3, to_date('22-04-2026','DD-MM-YYYY'), 'Paciente apresentou melhora no tratamento da diarreia.');
+exec inserir_dados_prontuario(2, 2, 2,to_date('07-01-2026','DD-MM-YYYY'),'Paciente apresentou melhora do tratamento de hipotermia.');
+exec inserir_dados_prontuario(3, 3, 3,to_date('03-05-2026','DD-MM-YYYY'),'Paciente apresentou febre alta e fadiga.');
+exec inserir_dados_prontuario(4, 4, 4,to_date('13-02-2026','DD-MM-YYYY'),'Paciente apresentou sintomas de diabetes.');
+exec inserir_dados_prontuario(5, 5, 5,to_date('09-03-2026','DD-MM-YYYY'),'Paciente apresentou alteração hormonal.');
+exec inserir_dados_prontuario(7, 7, 3,to_date('22-04-2026','DD-MM-YYYY'),'Paciente apresentou melhora no tratamento da diarreia.');
 -- ==================================================================
 /*
 SELECT 
