@@ -623,7 +623,7 @@ EXCEPTION
 end;
 /
 
-exec inserir_dados_relatorio(1, 1, 1, 'exemplo');
+exec inserir_dados_relatorio(1, 1, 1);
 exec inserir_dados_relatorio(2, 2, 4, 'Doença do carrapato');
 exec inserir_dados_relatorio(3, 3, 3);
 exec inserir_dados_relatorio(4, 4, 3);
@@ -985,11 +985,11 @@ exec inserir_dados_medics(2, 'Levotiroxina', '25mg', '1 Comprimido pela manhã')
 exec inserir_dados_medics(3, 'Prediderm', '25mg', '1 Comprimido pela manhã e pela noite');
 exec inserir_dados_medics(4, 'Vermífugo Fenzol', '500mg', '1 Comprimido pela manhã');
 exec inserir_dados_medics(5, 'Levotiroxina', '25mg', '1 Comprimido pela manhã e pela noite');
-exec inserir_dados_medics(6, 'Prediderm', '5mg', '1 Comprimido pela manhã');
-exec inserir_dados_medics(7, 'Levotiroxina', '50mg', '1 Comprimido pela manhã');
-exec inserir_dados_medics(8, 'Beneflora', '14mg', '1 Comprimido pela manhã');
-exec inserir_dados_medics(9, 'Vermífugo Fenzol', '500mg', '1 Comprimido pela manhãe pela noite');
-exec inserir_dados_medics(10, 'Levotiroxina', '25mg', '1 Comprimido pela manhã');
+exec inserir_dados_medics(6, 'Meloxicam', '2mg', '1 comprimido após o almoço');
+exec inserir_dados_medics(7, 'Gabapentina', '75mg', '1 cápsula a cada 12 horas');
+exec inserir_dados_medics(8, 'Doxiciclina', '100mg', '1 comprimido após o jantar');
+exec inserir_dados_medics(9, 'Omeprazol', '20mg', '1 cápsula em jejum');
+exec inserir_dados_medics(10, 'Carproflan', '50mg', '1 comprimido após a refeição');
 
 -------------------  RECEITA_MEDICAMENTO  -------------------
 create or replace procedure inserir_dados_rec_medic(
@@ -1106,11 +1106,11 @@ EXCEPTION
 end;
 /
 
-exec inserir_dados_prontuario(2, 2, 2,to_date('07-01-2026','DD-MM-YYYY'),'Paciente apresentou melhora do tratamento de hipotermia.');
-exec inserir_dados_prontuario(3, 3, 3,to_date('03-05-2026','DD-MM-YYYY'),'Paciente apresentou febre alta e fadiga.');
-exec inserir_dados_prontuario(4, 4, 4,to_date('13-02-2026','DD-MM-YYYY'),'Paciente apresentou sintomas de diabetes.');
-exec inserir_dados_prontuario(5, 5, 5,to_date('09-03-2026','DD-MM-YYYY'),'Paciente apresentou alteração hormonal.');
-exec inserir_dados_prontuario(7, 7, 3,to_date('22-04-2026','DD-MM-YYYY'),'Paciente apresentou melhora no tratamento da diarreia.');
+exec inserir_dados_prontuario(1, 2, 2,to_date('07-01-2026','DD-MM-YYYY'),'Paciente apresentou melhora do tratamento de hipotermia.');
+exec inserir_dados_prontuario(2, 3, 3,to_date('03-05-2026','DD-MM-YYYY'),'Paciente apresentou febre alta e fadiga.');
+exec inserir_dados_prontuario(3, 4, 4,to_date('13-02-2026','DD-MM-YYYY'),'Paciente apresentou sintomas de diabetes.');
+exec inserir_dados_prontuario(4, 5, 5,to_date('09-03-2026','DD-MM-YYYY'),'Paciente apresentou alteração hormonal.');
+exec inserir_dados_prontuario(5, 7, 3,to_date('22-04-2026','DD-MM-YYYY'),'Paciente apresentou melhora no tratamento da diarreia.');
 -- ==================================================================
 /*
 SELECT 
